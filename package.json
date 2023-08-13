@@ -1,6 +1,7 @@
 {
-  "name": "async-sequence",
+  "name": "@triyanox/async-sequence",
   "description": "A library for composing asynchronous operations in a sequence.",
+  "repository": "https://github.com/triyanox/async-sequence",
   "author": {
     "name": "Mohamed Achaq",
     "email": "hi@achaq.dev",
@@ -11,6 +12,11 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/",
+    "access": "public",
+    "tag": "latest"
+  },
   "files": [
     "dist"
   ],
