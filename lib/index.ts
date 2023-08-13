@@ -267,9 +267,6 @@ function* generatorFromPromises<T>(
 
 /**
  * Creates a new PromiseSequencer.
- * @param promiseGenerator A generator that yields promises.
- * @param options Options for the PromiseSequencer.
- * @returns A new PromiseSequencer.
  * @example
  * ```ts
  * const promiseSequencer = createPromiseSequencer(
