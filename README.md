@@ -1,0 +1,128 @@
+# promise-sequencer
+
+**PromiseSequencer** is a utility class that enables you to execute promises sequentially with concurrency and retry capabilities. It empowers you to manage promise execution order, concurrency, and handles retries and logging seamlessly.
+
+## Installation
+
+Install **PromiseSequencer** using your preferred package manager:
+
+```bash
+# Using npm
+npm install promise-sequencer
+
+# Using Bun
+bun add promise-sequencer
+
+# Using Yarn
+yarn add promise-sequencer
+
+# Using PNPM
+pnpm add promise-sequencer
+
+```
+
+## Usage
+
+```ts
+import createPromiseSequencer from 'promise-sequencer';
+
+// Example usage
+const promiseSequencer = createPromiseSequencer(
+  // add your promises here
+  [() => Promise.resolve("foo"), () => Promise.reject("bar")],
+  {
+    // the maximum number of promises that can run at the same time
+    concurrency: 2,
+    // the maximum number of times a task can be retried
+    retryAttempts: 3,
+    // the delay between retries
+    retryDelay: 1000,
+    // a logger that logs the status of the PromiseSequencer
+    logger: {
+      log: (level, message) => {
+        console.log(`[${level.toUpperCase()}] ${message}`);
+      },
+    },
+    // callbacks for when a task is completed, failed or retried
+    onTaskCompleted: (task) => {
+      console.log(`Task completed: ${task}`);
+    },
+    onTaskFailed: (task) => {
+      console.log(`Task failed: ${task}`);
+    },
+    onTaskRetried: (task) => {
+      console.log(`Task retried: ${task}`);
+    },
+    // whether to disable logs
+    disableLogs: false,
+  }
+);
+
+// use a custom generator 
+const promiseSequencer = createPromiseSequencer(
+  (function* custom() {
+    yield () => Promise.resolve("foo");
+    yield () => Promise.resolve("bar");
+  })()
+);
+
+// start the PromiseSequencer
+promiseSequencer.start();
+
+// stop the PromiseSequencer
+promiseSequencer.stop();
+```
+
+## API
+
+### Enum: LogLevel
+
+Represents different log levels for logging messages.
+
+- `ERROR`: Error log level.
+- `INFO`: Information log level.
+- `DEBUG`: Debug log level.
+
+### Interface: Logger
+
+A logger interface to implement custom logging behavior.
+
+- `log(level: LogLevel, message: string): void`: Logs a message at the specified log level.
+
+### Interface: PromiseSequencerOptions\<T>
+
+Options for configuring the PromiseSequencer.
+
+- `promiseGenerator`: A generator that yields promises.
+- `concurrency` (optional): The number of promises to run concurrently. Default: 1.
+- `retryAttempts` (optional): The number of times to retry a failed task. Default: 0.
+- `retryDelay` (optional): The delay in milliseconds between retries. Default: 0.
+- `logger` (optional): A logger instance for custom logging. Default: console.
+- `disableLogs` (optional): Whether to disable logging. Default: false.
+- `onTaskCompleted` (optional): A callback for task completion.
+- `onTaskFailed` (optional): A callback for task failure.
+- `onTaskRetried` (optional): A callback for task retries.
+
+### Class: PromiseSequencer\<T>
+
+A class for executing promises sequentially with concurrency and retry capabilities.
+
+- `constructor(options: PromiseSequencerOptions<T>)`: Creates a new PromiseSequencer instance.
+- `start(): Promise<boolean>`: Starts executing promises.
+- `stop()`: Stops the PromiseSequencer.
+- `getQueue(): (() => Promise<T>)[]`: Returns the current queue of tasks.
+- `getRunningTasks(): (() => Promise<T>)[]`: Returns the current running tasks.
+- `getCompletedTasks(): (() => Promise<T>)[]`: Returns the completed tasks.
+- `getFailedTasks(): (() => Promise<T>)[]`: Returns the failed tasks.
+- `getRetryTasks(): (() => Promise<T>)[]`: Returns the tasks that are currently being retried.
+
+### Function: createPromiseSequencer\<T>
+
+Creates a new PromiseSequencer instance.
+
+- `promiseGenerator`: A generator that yields promises.
+- `options` (optional): Options for configuring the PromiseSequencer.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
