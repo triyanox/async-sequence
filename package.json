@@ -15,8 +15,7 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "public",
-    "tag": "latest",
-    "postpublish": "npm publish --ignore-scripts --@triyanox:registry='https://registry.npmjs.org'"
+    "tag": "latest"
   },
   "files": [
     "dist"
@@ -26,7 +25,8 @@
     "build": "tsup",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "postpublish": "npm publish --ignore-scripts --@triyanox:registry='https://registry.npmjs.org'"
   },
   "devDependencies": {
     "typescript": "^5.1.3",
