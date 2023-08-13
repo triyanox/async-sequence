@@ -15,7 +15,8 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "public",
-    "tag": "latest"
+    "tag": "latest",
+    "postpublish": "npm publish --ignore-scripts --@triyanox:registry='https://registry.npmjs.org'"
   },
   "files": [
     "dist"
