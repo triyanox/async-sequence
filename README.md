@@ -8,23 +8,23 @@ Install **PromiseSequencer** using your preferred package manager:
 
 ```bash
 # Using npm
-npm install promise-sequencer
+npm install @triyanox/async-sequence
 
 # Using Bun
-bun add promise-sequencer
+bun add @triyanox/async-sequence
 
 # Using Yarn
-yarn add promise-sequencer
+yarn add @triyanox/async-sequence
 
 # Using PNPM
-pnpm add promise-sequencer
+pnpm add @triyanox/async-sequence
 
 ```
 
 ## Usage
 
 ```ts
-import createPromiseSequencer from 'promise-sequencer';
+import createPromiseSequencer from '@triyanox/async-sequence';
 
 // Example usage
 const promiseSequencer = createPromiseSequencer(
