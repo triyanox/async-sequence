@@ -69,6 +69,9 @@ const promiseSequencer = createPromiseSequencer(
 // start the PromiseSequencer
 promiseSequencer.start();
 
+// get the sequencer results
+const results = await promiseSequencer.getResults();
+
 // stop the PromiseSequencer
 promiseSequencer.stop();
 ```
@@ -102,6 +105,7 @@ Options for configuring the PromiseSequencer.
 - `onTaskCompleted` (optional): A callback for task completion.
 - `onTaskFailed` (optional): A callback for task failure.
 - `onTaskRetried` (optional): A callback for task retries.
+- `throwOnErrors` (optional): Whether to throw an error when a task fails. Default: false.
 
 ### Class: PromiseSequencer\<T>
 
@@ -115,6 +119,8 @@ A class for executing promises sequentially with concurrency and retry capabilit
 - `getCompletedTasks(): (() => Promise<T>)[]`: Returns the completed tasks.
 - `getFailedTasks(): (() => Promise<T>)[]`: Returns the failed tasks.
 - `getRetryTasks(): (() => Promise<T>)[]`: Returns the tasks that are currently being retried.
+- `getResults(): Promise<T[]>`: Returns the results of the PromiseSequencer if the `throwOnErrors` option is set to `false` it will return null for the failed tasks if not it will throw an error.
+- `setCurrentConcurrency(concurrency: number): void`: Sets the current concurrency.
 
 ### Function: createPromiseSequencer\<T>
 

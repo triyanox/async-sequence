@@ -1,3 +1,6 @@
+/**
+ * The log level.
+ */
 enum LogLevel {
   ERROR = 'error',
   INFO = 'info',
@@ -60,6 +63,10 @@ interface PromiseSequencerOptions<T> {
    * A callback that is called when a task is retried.
    * */
   onTaskRetried?: (task: () => Promise<T>) => void;
+  /**
+   * Chose if you want the failed tasks to throw and error or or return null.
+   */
+  throwOnError?: boolean;
 }
 
 /**
@@ -82,6 +89,8 @@ class PromiseSequencer<T> {
   private onTaskCompleted?: (task: () => Promise<T>) => void;
   private onTaskFailed?: (task: () => Promise<T>) => void;
   private onTaskRetried?: (task: () => Promise<T>) => void;
+  private results: (T | null)[] = [];
+  private throwOnError: boolean;
 
   /**
    * Creates a new PromiseSequencer.
@@ -101,6 +110,7 @@ class PromiseSequencer<T> {
     this.onTaskCompleted = options.onTaskCompleted;
     this.onTaskFailed = options.onTaskFailed;
     this.onTaskRetried = options.onTaskRetried;
+    this.throwOnError = options.throwOnError || false;
   }
 
   private defaultLogger(): Logger {
@@ -116,7 +126,8 @@ class PromiseSequencer<T> {
   private async runTaskWithRetry(task: () => Promise<T>): Promise<void> {
     for (let attempt = 0; attempt <= this.retryAttempts; attempt++) {
       try {
-        await task();
+        const result = await task();
+        this.results.push(result);
         return;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
@@ -128,7 +139,12 @@ class PromiseSequencer<T> {
           }
           await new Promise((resolve) => setTimeout(resolve, this.retryDelay));
         } else {
-          throw error;
+          if (this.throwOnError) {
+            throw error;
+          } else {
+            this.results.push(null);
+            return;
+          }
         }
       }
     }
@@ -164,6 +180,27 @@ class PromiseSequencer<T> {
       });
   }
 
+  private sleepWhileRunning(): Promise<void> {
+    return new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (!this.isRunning) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+  }
+
+  /**
+   * Returns the results of the PromiseSequencer.
+   * If the option `throwOnError` is set to true, this method will throw an error if a task fails it will return the results for the fulfilled tasks.
+   * If the option `throwOnError` is set to false, this method will return null for failed tasks.
+   */
+  async getResults(): Promise<(T | null)[]> {
+    await this.sleepWhileRunning();
+    return this.results;
+  }
+
   /**
    * Returns the current queue of tasks.
    */
@@ -197,6 +234,10 @@ class PromiseSequencer<T> {
    */
   getRetryTasks(): (() => Promise<T>)[] {
     return this.retryTasks;
+  }
+
+  setCurrentConcurrency(concurrency: number) {
+    this.concurrency = concurrency;
   }
 
   /**
