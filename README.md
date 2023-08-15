@@ -29,7 +29,7 @@ import createPromiseSequencer from '@triyanox/async-sequence';
 // Example usage
 const promiseSequencer = createPromiseSequencer(
   // add your promises here
-  [() => Promise.resolve("foo"), () => Promise.reject("bar")],
+  [() => Promise.resolve('foo'), () => Promise.reject('bar')],
   {
     // the maximum number of promises that can run at the same time
     concurrency: 2,
@@ -55,15 +55,15 @@ const promiseSequencer = createPromiseSequencer(
     },
     // whether to disable logs
     disableLogs: false,
-  }
+  },
 );
 
-// use a custom generator 
+// use a custom generator
 const promiseSequencer = createPromiseSequencer(
   (function* custom() {
-    yield () => Promise.resolve("foo");
-    yield () => Promise.resolve("bar");
-  })()
+    yield () => Promise.resolve('foo');
+    yield () => Promise.resolve('bar');
+  })(),
 );
 
 // start the PromiseSequencer
