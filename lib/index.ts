@@ -100,7 +100,7 @@ class PromiseSequencer<T> {
     this.concurrency = options.concurrency || 1;
     this.retryAttempts = options.retryAttempts || 0;
     this.retryDelay = options.retryDelay || 0;
-    this.logger = options.logger || this.defaultLogger();
+    this.logger = this.adaptedLogger(options.logger);
     this.disableLogs = options.disableLogs || false;
     this.queue = [];
     this.runningTasks = [];
@@ -118,6 +118,17 @@ class PromiseSequencer<T> {
       log: (level, message) => {
         if (!this.disableLogs) {
           console.log(`[${level.toUpperCase()}] ${message}`);
+        }
+      },
+    };
+  }
+
+  private adaptedLogger(logger?: Logger): Logger {
+    if (!logger) return this.defaultLogger();
+    return {
+      log: (level, message) => {
+        if (!this.disableLogs) {
+          logger.log(level, message);
         }
       },
     };
