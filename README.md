@@ -2,6 +2,13 @@
 
 **PromiseSequencer** is a utility class that enables you to execute promises sequentially with concurrency and retry capabilities. It empowers you to manage promise execution order, concurrency, and handles retries and logging seamlessly.
 
+<img
+  src="https://raw.githubusercontent.com/triyanox/async-sequence/main/assets/banner.png" alt="async-sequence banner"
+  title="iamjs" align="center" 
+  height="auto" 
+  width="100%"
+ />
+
 ## Installation
 
 Install **PromiseSequencer** using your preferred package manager:
@@ -44,11 +51,11 @@ const promiseSequencer = createPromiseSequencer(
       },
     },
     // callbacks for when a task is completed, failed or retried
-    onTaskCompleted: (task) => {
-      console.log(`Task completed: ${task}`);
+    onTaskCompleted: (result) => {
+      console.log(`Task completed with result: ${result()}`);
     },
-    onTaskFailed: (task) => {
-      console.log(`Task failed: ${task}`);
+    onTaskFailed: (error) => {
+      console.log(`Task failed with error: ${error()}`);
     },
     onTaskRetried: (task) => {
       console.log(`Task retried: ${task}`);
@@ -63,6 +70,7 @@ const promiseSequencer = createPromiseSequencer(
   (function* custom() {
     yield () => Promise.resolve('foo');
     yield () => Promise.resolve('bar');
+    yield () => Promise.reject(new Error('baz'));
   })(),
 );
 
