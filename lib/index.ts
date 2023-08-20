@@ -7,6 +7,13 @@ enum LogLevel {
   DEBUG = 'debug',
 }
 
+type AsyncSequenceError = {
+  message: string;
+  stack: string;
+};
+
+type AsyncSequenceResult<T> = T;
+
 /**
  * A logger interface.
  * Implement this interface to provide your own logger.
@@ -54,11 +61,11 @@ interface PromiseSequencerOptions<T> {
   /**
    * A callback that is called when a task is completed.
    */
-  onTaskCompleted?: (task: () => Promise<T>) => void;
+  onTaskCompleted?: (result: () => AsyncSequenceResult<T>) => void;
   /**
    * A callback that is called when a task fails.
    * */
-  onTaskFailed?: (task: () => Promise<T>) => void;
+  onTaskFailed?: (error: () => AsyncSequenceError) => void;
   /**
    * A callback that is called when a task is retried.
    * */
@@ -86,11 +93,11 @@ class PromiseSequencer<T> {
   private completedTasks: (() => Promise<T>)[];
   private failedTasks: (() => Promise<T>)[];
   private retryTasks: (() => Promise<T>)[];
-  private onTaskCompleted?: (task: () => Promise<T>) => void;
-  private onTaskFailed?: (task: () => Promise<T>) => void;
-  private onTaskRetried?: (task: () => Promise<T>) => void;
   private results: (T | null)[] = [];
   private throwOnError: boolean;
+  private onTaskCompleted?: (result: () => AsyncSequenceResult<T>) => void;
+  private onTaskFailed?: (error: () => AsyncSequenceError) => void;
+  private onTaskRetried?: (task: () => Promise<T>) => void;
 
   /**
    * Creates a new PromiseSequencer.
@@ -138,6 +145,9 @@ class PromiseSequencer<T> {
     for (let attempt = 0; attempt <= this.retryAttempts; attempt++) {
       try {
         const result = await task();
+        if (this.onTaskCompleted) {
+          this.onTaskCompleted(() => result);
+        }
         this.results.push(result);
         return;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -151,6 +161,9 @@ class PromiseSequencer<T> {
           await new Promise((resolve) => setTimeout(resolve, this.retryDelay));
         } else {
           if (this.throwOnError) {
+            if (this.onTaskFailed) {
+              this.onTaskFailed(() => error);
+            }
             throw error;
           } else {
             this.results.push(null);
@@ -271,18 +284,12 @@ class PromiseSequencer<T> {
       this.runTaskWithRetry(task)
         .then(() => {
           this.logger.log(LogLevel.INFO, 'Task completed');
-          if (this.onTaskCompleted) {
-            this.onTaskCompleted(task);
-          }
           this.runningTasks = this.runningTasks.filter((t) => t !== task);
           this.completedTasks.push(task);
           this.runNextTask();
         })
         .catch(() => {
           this.logger.log(LogLevel.ERROR, 'Task failed');
-          if (this.onTaskFailed) {
-            this.onTaskFailed(task);
-          }
           this.runningTasks = this.runningTasks.filter((t) => t !== task);
           this.failedTasks.push(task);
           this.runNextTask();
@@ -347,6 +354,8 @@ function createPromiseSequencer<T>(
 }
 
 export {
+  AsyncSequenceError,
+  AsyncSequenceResult,
   createPromiseSequencer,
   generatorFromPromises,
   Logger,
