@@ -1,6 +1,6 @@
-# promise-sequencer
+# async-sequence
 
-**PromiseSequencer** is a utility class that enables you to execute promises sequentially with concurrency and retry capabilities. It empowers you to manage promise execution order, concurrency, and handles retries and logging seamlessly.
+**async-sequence** contains **PromiseSequencer** a utility class that enables you to execute promises sequentially with concurrency and retry capabilities. It empowers you to manage promise execution order, concurrency, and handles retries and logging seamlessly.
 
 <img
   src="https://raw.githubusercontent.com/triyanox/async-sequence/main/assets/banner.png" alt="async-sequence banner"
@@ -11,7 +11,7 @@
 
 ## Installation
 
-Install **PromiseSequencer** using your preferred package manager:
+Install **async-sequence** using your preferred package manager:
 
 ```bash
 # Using npm
