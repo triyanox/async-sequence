@@ -2,13 +2,6 @@
 
 **async-sequence** contains **PromiseSequencer** a utility class that enables you to execute promises sequentially with concurrency and retry capabilities. It empowers you to manage promise execution order, concurrency, and handles retries and logging seamlessly.
 
-<img
-  src="https://raw.githubusercontent.com/triyanox/async-sequence/main/assets/banner.png" alt="async-sequence banner"
-  title="iamjs" align="center" 
-  height="auto" 
-  width="100%"
- />
-
 ## Installation
 
 Install **async-sequence** using your preferred package manager:
